@@ -50,6 +50,22 @@ class PlantByID(Resource):
 
 api.add_resource(PlantByID, '/plants/<int:id>')
 
+@app.route('/plants/<int:id>', methods=['PATCH'])
+def update_plant(id):
+    data = request.get_json()
+    plant = Plant.query.get_or_404(id)
+    if 'is_in_stock' in data:
+        plant.is_in_stock = data['is_in_stock']
+    db.session.commit()
+    return jsonify(plant.to_dict())
+
+@app.route('/plants/<int:id>', methods=['DELETE'])
+def delete_plant(id):
+    plant = Plant.query.get_or_404(id)
+    db.session.delete(plant)
+    db.session.commit()
+    return '', 204
+
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)
